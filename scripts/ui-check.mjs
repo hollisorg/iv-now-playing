@@ -79,6 +79,31 @@ for (const skin of ['strip', 'card', 'eye', 'ticker']) {
   await frame().locator('#np').screenshot({ path: path.join(out, `widget-${skin}.png`) })
 }
 
+// A source narrower than the style (as in OBS): the widget shrinks to fit and long text slides back and forth.
+{
+  await page.click('#skins .skin[data-v="ticker"]')
+  for (let i = 0; i < 40; i++) {
+    if ((await frame().locator('.np-title .t1').textContent()).startsWith('A Very Long')) break
+    await page.waitForTimeout(500)
+  }
+  await page.$eval('#preview', (f) => { f.style.width = '440px' })
+  await page.waitForTimeout(1500)
+  const fit = await frame().locator('#np').evaluate((e) => ({ w: e.getBoundingClientRect().width, vw: innerWidth }))
+  check('widget fits a narrow source', fit.w <= fit.vw, JSON.stringify(fit))
+  const slide = await frame().locator('.np-title').evaluate((e) => ({
+    on: e.classList.contains('marquee'),
+    shift: e.style.getPropertyValue('--shift'),
+    anim: getComputedStyle(e.querySelector('.np-scroll')).animationName,
+    dir: getComputedStyle(e.querySelector('.np-scroll')).animationDirection,
+  }))
+  check('a long title slides back and forth', slide.on && slide.anim === 'slide-text' && slide.dir === 'alternate' && parseFloat(slide.shift) < 0, JSON.stringify(slide))
+  await frame().locator('#np').screenshot({ path: path.join(out, 'ticker-narrow-start.png') })
+  await page.waitForTimeout(5500)
+  await frame().locator('#np').screenshot({ path: path.join(out, 'ticker-narrow-later.png') })
+  await page.$eval('#preview', (f) => { f.style.width = '' })
+  await page.evaluate(() => window.dispatchEvent(new Event('resize')))
+}
+
 // Saved to disk?
 const saved = JSON.parse(fs.readFileSync(path.join(dataDir, 'settings.json'), 'utf8'))
 check('settings saved to the data folder', saved.profiles[0].skin === 'ticker')

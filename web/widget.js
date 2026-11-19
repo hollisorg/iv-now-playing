@@ -47,7 +47,6 @@ function demoTrack() {
 
 function setLines(box, text) {
   box.querySelector('.t1').textContent = text
-  box.querySelector('.t2').textContent = text
   box.classList.remove('marquee')
   box.title = text
 }
@@ -58,13 +57,16 @@ function fitLines() {
     // Hidden boxes measure 0 wide; they are measured again when the widget shows.
     if (!box.clientWidth) continue
     const span = box.querySelector('.t1')
-    if (span.scrollWidth > box.clientWidth + 2) {
-      box.style.setProperty('--dur', `${Math.max(8, span.scrollWidth / 45)}s`)
+    const over = span.scrollWidth - box.clientWidth
+    if (over > 2) {
+      // Slide by the overflow plus the end gap; about 40 px a second, never quicker than 6 s a way.
+      const shift = over + 14
+      box.style.setProperty('--shift', `${-shift}px`)
+      box.style.setProperty('--dur', `${Math.max(6, shift / 40 + 3)}s`)
       box.classList.add('marquee')
     }
   }
 }
-
 const refit = () => setTimeout(() => requestAnimationFrame(fitLines), 700)
 
 function coverSource(t) {

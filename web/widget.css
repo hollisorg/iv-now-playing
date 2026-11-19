@@ -30,6 +30,7 @@ body { color: var(--ink); -webkit-font-smoothing: antialiased; }
   border-left: 3px solid var(--accent);
   color: var(--ink);
   font-family: var(--font);
+  max-width: calc((100vw - 20px) / var(--scale));
 }
 #stage.right .np { transform-origin: top right; border-left-width: 1px; border-right: 3px solid var(--accent); }
 .np[hidden] { display: none; }
@@ -74,11 +75,11 @@ body { color: var(--ink); -webkit-font-smoothing: antialiased; }
 .np.font-barlow .np-title, .np.font-dm-sans .np-title { font-weight: 700; text-transform: none; letter-spacing: 0; }
 .np.font-jetbrains-mono .np-title { font-weight: 600; text-transform: none; letter-spacing: 0; }
 .np-scroll { display: inline-flex; }
-.np-scroll .t2 { display: none; }
-.marquee .np-scroll { animation: marquee var(--dur, 10s) linear infinite; }
-.marquee .t2 { display: inline; }
-.marquee .np-scroll .t1, .marquee .np-scroll .t2 { padding-right: 48px; }
-.marquee { mask-image: linear-gradient(90deg, transparent 0, #000 10px, #000 calc(100% - 24px), transparent); }
+.np-scroll .t1 { display: inline-block; }
+/* Too long to fit: slide to the end and back, pausing at each end, so the whole line can be read. */
+.marquee .np-scroll { animation: slide-text var(--dur, 8s) ease-in-out infinite alternate; }
+.marquee .np-scroll .t1 { padding-right: 12px; }
+.marquee { mask-image: linear-gradient(90deg, #000 0, #000 calc(100% - 18px), transparent); }
 .np-album { font: 500 11px/1.3 var(--mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-soft); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: none; }
 .np.show-album .np-album:not(:empty) { display: block; }
 .np-progress { height: 6px; background: var(--line); overflow: hidden; display: none; }
@@ -156,6 +157,13 @@ body { color: var(--ink); -webkit-font-smoothing: antialiased; }
 .np.skin-ticker .np-progress { position: absolute; left: 0; right: 0; bottom: 0; height: 4px; }
 .np.skin-ticker.show-times .np-times { margin: 0 0 0 auto; align-self: center; gap: 6px; }
 
+/* A narrow source: the ticker's label keeps just its bars, leaving room for the song. */
+@media (max-width: 700px) {
+  .np.skin-ticker .np-label-text { display: none; }
+  .np.skin-ticker .np-label { padding: 0 16px; }
+  .np.skin-ticker:not(.bars) .np-label { display: none; }
+}
+
 /* Song change: a quick fade of the art and words */
 .np.swap .np-art img, .np.swap .np-body { animation: swap 0.5s ease; }
 
@@ -185,7 +193,7 @@ body { color: var(--ink); -webkit-font-smoothing: antialiased; }
 @keyframes swap { from { opacity: 0.15; } to { opacity: 1; } }
 @keyframes spin { to { rotate: 360deg; } }
 @keyframes bar { from { height: 20%; } to { height: 100%; } }
-@keyframes marquee { to { transform: translateX(-50%); } }
+@keyframes slide-text { 0%, 18% { transform: translateX(0); } 82%, 100% { transform: translateX(var(--shift, 0px)); } }
 
 @media (prefers-reduced-motion: reduce) {
   .np-scroll, .np-art, .np-bars i { animation: none !important; }
