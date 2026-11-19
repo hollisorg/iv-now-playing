@@ -1,7 +1,7 @@
 {
   "name": "iv-now-playing",
   "productName": "IV Now Playing",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Infinite Variance now-playing widget for OBS: shows the song playing on your PC, from any player, with no logins.",
   "author": "Infinite Variance",
   "license": "MIT",
