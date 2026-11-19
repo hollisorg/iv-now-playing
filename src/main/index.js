@@ -9,6 +9,7 @@ import { pickSession, toTrack, trackChanged, appInfo } from '../core/sessions.js
 import { createStore } from '../core/settings.js'
 import { createServer } from '../core/server.js'
 import { startMedia } from '../core/media.js'
+import { initUpdater, updateState } from './updater.js'
 
 const APP_ID = 'ai.infinitevariance.nowplaying'
 const PRODUCT = 'IV Now Playing'
@@ -48,6 +49,7 @@ if (!app.requestSingleInstanceLock()) {
   let port = 0
   let lastTick = { sessions: [], current: '' }
   let readerStatus = { running: false }
+  let updater = null
   const shownByProfile = new Map() // profile id -> track (each profile has its own source rules)
   const hidden = process.argv.includes('--hidden')
 
@@ -125,8 +127,10 @@ if (!app.requestSingleInstanceLock()) {
   function updateTray() {
     if (!tray) return
     const cfg = store.get()
+    const u = updateState()
     const menu = Menu.buildFromTemplate([
       { label: 'Open IV Now Playing', click: openEditor },
+      ...(u.status === 'ready' ? [{ label: `Restart to update to ${u.available}`, click: () => updater?.install() }] : []),
       { type: 'separator' },
       ...cfg.profiles.map((p) => ({ label: `Copy OBS link: ${p.name}`, click: () => clipboard.writeText(widgetUrl(p.id)) })),
       { type: 'separator' },
@@ -154,7 +158,7 @@ if (!app.requestSingleInstanceLock()) {
 
   function configForEditor() {
     const cfg = store.get()
-    return { ...cfg, port, wantedPort: cfg.port, urls: Object.fromEntries(cfg.profiles.map((p) => [p.id, widgetUrl(p.id)])), testCopy: borrowedDataDir }
+    return { ...cfg, port, wantedPort: cfg.port, update: updateState(), urls: Object.fromEntries(cfg.profiles.map((p) => [p.id, widgetUrl(p.id)])), testCopy: borrowedDataDir }
   }
 
   // ---------- Editor IPC (only from the editor window) ----------
@@ -239,6 +243,8 @@ if (!app.requestSingleInstanceLock()) {
     broadcast('profile', saved)
     return saved
   })
+  ipcMain.handle('update-check', async (e) => (fromEditor(e) && updater ? updater.check() : updateState()))
+  ipcMain.handle('update-install', (e) => (fromEditor(e) && updater ? updater.install() : false))
   ipcMain.handle('open-help', (e) => {
     if (!fromEditor(e)) return
     shell.openExternal('https://infinitevariance.ai/downloads')
@@ -280,6 +286,14 @@ if (!app.requestSingleInstanceLock()) {
         if (editor && !editor.isDestroyed()) editor.webContents.send('event', { type: 'sessions', data: sessionsSummary() })
       },
     })
+
+    updater = initUpdater(
+      (state) => {
+        updateTray()
+        if (editor && !editor.isDestroyed()) editor.webContents.send('event', { type: 'update', data: state })
+      },
+      { borrowedDataDir },
+    )
 
     if (!borrowedDataDir) app.setLoginItemSettings({ openAtLogin: store.get().launchAtLogin, args: ['--hidden'] })
     if (!hidden || process.env.IV_NOW_PLAYING_OPEN_ON_START === '1') openEditor()

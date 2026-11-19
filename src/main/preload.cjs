@@ -11,6 +11,8 @@ contextBridge.exposeInMainWorld('ivnp', {
   launchAtLogin: (on) => ipcRenderer.invoke('launch-at-login', on),
   pickCover: (id) => ipcRenderer.invoke('pick-cover', id),
   openHelp: () => ipcRenderer.invoke('open-help'),
+  checkUpdate: () => ipcRenderer.invoke('update-check'),
+  installUpdate: () => ipcRenderer.invoke('update-install'),
   on: (fn) => {
     const handler = (_e, msg) => fn(msg)
     ipcRenderer.on('event', handler)

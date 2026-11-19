@@ -57,6 +57,8 @@ check('another host name is refused', (await get(`http://127.0.0.1:${port}/w/mai
 
 const url = await page.textContent('#url')
 check('OBS link shown', url === `http://127.0.0.1:${port}/w/main`, url)
+const version = await page.textContent('#version')
+check('version and update state shown', /^Version 0\.\d+\.\d+ · /.test(version), version)
 check('OBS size shown', /\d+ × \d+/.test(await page.textContent('#size')), await page.textContent('#size'))
 
 const frame = () => page.frameLocator('#preview')

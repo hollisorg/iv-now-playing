@@ -39,6 +39,8 @@ b { font-weight: 600; color: var(--cream); }
 .brand-logo { height: 20px; width: auto; display: block; -webkit-user-drag: none; }
 .top { display: flex; align-items: center; gap: 10px; flex: none; padding: 8px 16px; border-bottom: 1px solid var(--line); background: var(--deep); flex-wrap: wrap; }
 .spacer { flex: 1; }
+#version { margin-right: 8px; padding-right: 16px; border-right: 1px solid var(--line); line-height: 26px; }
+#version:empty { display: none; }
 .tabs { display: flex; border: 1px solid var(--line-strong); flex-wrap: wrap; }
 .tabs button { min-height: 44px; min-width: 110px; border: 0; border-right: 1px solid var(--line); background: transparent; color: var(--paper-dim); padding: 0 16px; font: 500 11px/1 var(--mono); letter-spacing: 0.12em; text-transform: uppercase; }
 .tabs button:last-child { border-right: 0; }

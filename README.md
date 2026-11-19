@@ -7,6 +7,14 @@ own media controls, the same ones behind the media pop-up when you press a volum
 Works with Spotify, Apple Music, TIDAL, YouTube Music (desktop apps or the web), Deezer, Amazon Music,
 foobar2000, MusicBee and anything else that shows in Windows' media pop-up.
 
+![IV Now Playing's editor with the Card style on a demo song](docs/screenshot.png)
+
+## Download
+
+[IV-Now-Playing-Setup.exe](https://github.com/hollisorg/iv-now-playing/releases/latest/download/IV-Now-Playing-Setup.exe)
+for Windows 10 and 11. It isn't code-signed yet, so Windows may ask before it runs: choose More info, then
+Run anyway. The installed app updates itself from this repo's releases.
+
 ## Use it
 
 1. Install and open IV Now Playing. It lives in the tray.
@@ -34,6 +42,9 @@ plays; and which players count.
 - The app picks the session to show for each widget and serves the widget at
   `http://127.0.0.1:7766/w/<widget>` on this PC only. Other hosts and other websites are refused.
 - Settings live in `%APPDATA%\IV Now Playing\settings.json`.
+- Updates: 10 seconds after start and every six hours it checks this repo's latest release, downloads a new
+  version in the background and installs it when you press Restart to update (in the app or the tray menu) or
+  quit. Only the installed app does this.
 
 ## Develop
 

@@ -291,8 +291,30 @@ $('#pickCover').addEventListener('click', async () => {
 })
 $('#clearCover').addEventListener('click', () => change('npCover', ''))
 
+// ---------- Updates ----------
+function renderUpdate(u) {
+  if (!u) return
+  const text = {
+    dev: `Version ${u.version} · from source`,
+    portable: `Version ${u.version} · updates only in the installed app`,
+    idle: `Version ${u.version}`,
+    checking: `Version ${u.version} · checking for updates`,
+    current: `Version ${u.version} · up to date`,
+    downloading: `Downloading ${u.available || 'update'}${u.percent ? ` · ${Math.round(u.percent)}%` : ''}`,
+    ready: `Version ${u.available} is ready`,
+    error: `Version ${u.version} · couldn't check for updates`,
+  }[u.status]
+  $('#version').textContent = text || `Version ${u.version}`
+  $('#version').title = u.error || ''
+  $('#restartUpdate').hidden = u.status !== 'ready'
+  $('#checkUpdate').hidden = !['current', 'error', 'idle'].includes(u.status)
+}
+$('#restartUpdate').addEventListener('click', () => api.installUpdate())
+$('#checkUpdate').addEventListener('click', async () => renderUpdate(await api.checkUpdate()))
+
 api.on(({ type, data }) => {
-  if (type === 'sessions') {
+  if (type === 'update') renderUpdate(data)
+  else if (type === 'sessions') {
     sessions = data
     renderPlayers()
   } else if (type === 'config') {
@@ -309,6 +331,7 @@ async function start() {
   sessions = (await api.sessions()) || sessions
   $('#login').checked = config.launchAtLogin
   $('#login').disabled = config.testCopy
+  renderUpdate(config.update)
   if (config.port !== config.wantedPort) {
     $('#portNote').hidden = false
     $('#portNote').textContent = `Port ${config.wantedPort} was busy, so this run uses ${config.port}. If OBS shows nothing, copy the link again.`

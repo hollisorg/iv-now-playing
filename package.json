@@ -8,6 +8,10 @@
   "private": true,
   "type": "module",
   "main": "./src/main/index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hollisorg/iv-now-playing.git"
+  },
   "homepage": "https://infinitevariance.ai",
   "scripts": {
     "start": "electron .",
@@ -24,11 +28,27 @@
     "appId": "ai.infinitevariance.nowplaying",
     "productName": "IV Now Playing",
     "copyright": "© 2026 Infinite Variance",
-    "directories": { "output": "dist", "buildResources": "build" },
-    "files": ["src/**/*", "web/**/*", "build/icon.png", "build/tray.png", "package.json"],
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "src/**/*",
+      "web/**/*",
+      "build/icon.png",
+      "build/tray.png",
+      "package.json"
+    ],
     "asar": true,
     "win": {
-      "target": [{ "target": "nsis", "arch": ["x64"] }],
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
       "icon": "build/icon.ico"
     },
     "nsis": {
@@ -43,9 +63,29 @@
       "deleteAppDataOnUninstall": false
     },
     "extraResources": [
-      { "from": "resources/media-reader.ps1", "to": "media-reader.ps1" },
-      { "from": "THIRD_PARTY_NOTICES.txt", "to": "THIRD_PARTY_NOTICES.txt" },
-      { "from": "build/licenses", "to": "licenses" }
+      {
+        "from": "resources/media-reader.ps1",
+        "to": "media-reader.ps1"
+      },
+      {
+        "from": "THIRD_PARTY_NOTICES.txt",
+        "to": "THIRD_PARTY_NOTICES.txt"
+      },
+      {
+        "from": "build/licenses",
+        "to": "licenses"
+      }
+    ],
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "hollisorg",
+        "repo": "iv-now-playing",
+        "releaseType": "draft"
+      }
     ]
+  },
+  "dependencies": {
+    "electron-updater": "6.8.9"
   }
 }
