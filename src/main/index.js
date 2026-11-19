@@ -10,6 +10,7 @@ import { createStore } from '../core/settings.js'
 import { createServer } from '../core/server.js'
 import { startMedia } from '../core/media.js'
 import { initUpdater, updateState } from './updater.js'
+import { createNewsletter, fileStore, registerNewsletter } from './newsletter.js'
 
 const APP_ID = 'ai.infinitevariance.nowplaying'
 const PRODUCT = 'IV Now Playing'
@@ -160,6 +161,11 @@ if (!app.requestSingleInstanceLock()) {
     const cfg = store.get()
     return { ...cfg, port, wantedPort: cfg.port, update: updateState(), urls: Object.fromEntries(cfg.profiles.map((p) => [p.id, widgetUrl(p.id)])), testCopy: borrowedDataDir }
   }
+
+  // The IV Newsletter (src/main/newsletter.js, shared by every IV app): sends only an address typed and joined in the
+  // editor's Newsletter dialog, keeps only the join date. A copy with its own data folder (IV_NOW_PLAYING_DATA_DIR) is a
+  // test copy: it only sends to IV_NEWSLETTER_URL, never to the live function.
+  registerNewsletter(ipcMain, shell, createNewsletter({ app: 'iv-now-playing', version: app.getVersion(), store: fileStore(path.join(dataDir, 'newsletter.json')), url: borrowedDataDir ? process.env.IV_NEWSLETTER_URL || 'http://127.0.0.1:9/iv-newsletter' : undefined }))
 
   // ---------- Editor IPC (only from the editor window) ----------
   ipcMain.handle('config', (e) => (fromEditor(e) ? configForEditor() : null))

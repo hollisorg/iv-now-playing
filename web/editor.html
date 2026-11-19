@@ -5,6 +5,7 @@
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; connect-src 'self'; font-src 'self'; frame-src 'self'">
 <title>IV Now Playing</title>
 <link rel="stylesheet" href="/static/fonts.css">
+<link rel="stylesheet" href="/static/newsletter-box.css">
 <link rel="stylesheet" href="/static/editor.css">
 </head>
 <body>
@@ -27,6 +28,7 @@
     <span class="mono dim" id="version" aria-live="polite"></span>
     <button type="button" class="btn btn-primary" id="restartUpdate" hidden>Restart to update</button>
     <button type="button" class="btn" id="checkUpdate" hidden>Check for updates</button>
+    <button type="button" class="btn" id="newsletter" aria-haspopup="dialog">Newsletter</button>
     <label class="setting inline"><span class="mono dim">Open at login</span><input type="checkbox" class="sw" id="login"></label>
   </div>
 

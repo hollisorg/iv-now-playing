@@ -1,5 +1,6 @@
 // IV Now Playing editor. Every change saves straight away; the preview is the real widget page.
 import { SKIN_SIZES } from './logic.js'
+import { openNewsletterDialog } from './newsletter-box.js'
 
 const api = window.ivnp
 const $ = (s) => document.querySelector(s)
@@ -310,6 +311,12 @@ function renderUpdate(u) {
   $('#checkUpdate').hidden = !['current', 'error', 'idle'].includes(u.status)
 }
 $('#restartUpdate').addEventListener('click', () => api.installUpdate())
+
+// ---------- The IV Newsletter (opt-in; opens only when Newsletter is clicked, never by itself) ----------
+$('#newsletter').addEventListener('click', () => {
+  const d = openNewsletterDialog(api.newsletter)
+  d.addEventListener('close', () => $('#newsletter').focus())
+})
 $('#checkUpdate').addEventListener('click', async () => renderUpdate(await api.checkUpdate()))
 
 api.on(({ type, data }) => {

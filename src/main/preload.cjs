@@ -13,6 +13,14 @@ contextBridge.exposeInMainWorld('ivnp', {
   openHelp: () => ipcRenderer.invoke('open-help'),
   checkUpdate: () => ipcRenderer.invoke('update-check'),
   installUpdate: () => ipcRenderer.invoke('update-install'),
+  // The IV Newsletter signup (src/main/newsletter.js). Same calls as the shared newsletter-preload.js; written out here
+  // because this preload is CommonJS in a sandbox and can't import it.
+  newsletter: {
+    status: () => ipcRenderer.invoke('newsletter:status'),
+    join: (input) => ipcRenderer.invoke('newsletter:join', input),
+    closeCard: () => ipcRenderer.invoke('newsletter:close-card'),
+    openPage: () => ipcRenderer.invoke('newsletter:open-page'),
+  },
   on: (fn) => {
     const handler = (_e, msg) => fn(msg)
     ipcRenderer.on('event', handler)
