@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; connect-src 'self'; font-src 'self'">
+<title>IV Now Playing</title>
+<link rel="stylesheet" href="/static/fonts.css">
+<link rel="stylesheet" href="/static/widget.css">
+</head>
+<body>
+<div id="stage">
+  <div id="np" class="np" hidden>
+    <div class="np-bg" aria-hidden="true"></div>
+    <div class="np-label"><span class="np-label-text">Now playing</span><span class="np-bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span></div>
+    <div class="np-cover">
+      <svg class="np-eye" viewBox="0 0 200 120" aria-hidden="true"><path d="M4 60 C 52 2, 148 2, 196 60 C 148 118, 52 118, 4 60 Z"/></svg>
+      <div class="np-art"><img alt=""><span class="np-hole" aria-hidden="true"></span></div>
+    </div>
+    <div class="np-body">
+      <div class="np-kicker"><span class="np-app"></span><span class="np-bars np-bars-inline" aria-hidden="true"><i></i><i></i><i></i><i></i></span></div>
+      <div class="np-title"><span class="np-scroll"><span class="t1"></span><span class="t2" aria-hidden="true"></span></span></div>
+      <div class="np-artist"><span class="np-scroll"><span class="t1"></span><span class="t2" aria-hidden="true"></span></span></div>
+      <div class="np-album"></div>
+      <div class="np-progress"><i></i></div>
+      <div class="np-times"><span class="np-cur">0:00</span><span class="np-dur">0:00</span></div>
+    </div>
+  </div>
+  <div id="ghost" hidden></div>
+</div>
+<script type="module" src="/static/widget.js"></script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+node_modules/
+dist/
+*.log
+# QA screenshots and art sources stay local.
+qa/
+AGENTS.md

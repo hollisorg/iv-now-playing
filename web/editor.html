@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; connect-src 'self'; font-src 'self'; frame-src 'self'">
+<title>IV Now Playing</title>
+<link rel="stylesheet" href="/static/fonts.css">
+<link rel="stylesheet" href="/static/editor.css">
+</head>
+<body>
+<div class="app">
+  <!-- The IV apps' titlebar: the app's own mark, then "Infinite Variance / <app>". -->
+  <header class="titlebar">
+    <img class="brand-logo" src="/static/now-playing-mark.png" alt="IV Now Playing">
+    <span class="mono">Infinite Variance <span class="dim">/ Now Playing</span></span>
+  </header>
+
+  <div class="top">
+    <nav class="tabs" id="profileList" aria-label="Widgets"></nav>
+    <button type="button" class="btn" id="addBtn">+ New widget</button>
+    <form id="addForm" class="add" hidden>
+      <input id="addName" maxlength="40" placeholder="Widget name" aria-label="New widget name">
+      <button type="submit" class="btn btn-primary">Add</button>
+      <button type="button" class="btn" id="addCancel">Cancel</button>
+    </form>
+    <span class="spacer"></span>
+    <label class="setting inline"><span class="mono dim">Open at login</span><input type="checkbox" class="sw" id="login"></label>
+  </div>
+
+  <main class="layout">
+    <section class="main">
+      <div class="card">
+        <div class="card-head">
+          <h2 class="card-name">Preview</h2>
+          <label class="setting inline"><span class="mono dim">Demo song</span><input type="checkbox" class="sw" id="demo"></label>
+        </div>
+        <div class="preview" id="previewBox"><iframe id="preview" title="Widget preview"></iframe></div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <h2 class="card-name">Add it to OBS</h2>
+          <span class="mono dim" id="size"></span>
+        </div>
+        <div class="url">
+          <code id="url"></code>
+          <button id="copy" type="button" class="btn btn-primary">Copy link</button>
+        </div>
+        <p class="note warn" id="portNote" hidden></p>
+        <ol class="steps">
+          <li><span class="mono">01</span><span>In OBS, add a <b>Browser</b> source.</span></li>
+          <li><span class="mono">02</span><span>Paste the link into <b>URL</b>. Set width and height to <b id="size2"></b>.</span></li>
+          <li><span class="mono">03</span><span>Turn off <b>Shutdown source when not visible</b> so it keeps up while you switch scenes.</span></li>
+        </ol>
+        <p class="note">The link works on this PC while IV Now Playing runs in the tray.</p>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <h2 class="card-name">Players on this PC</h2>
+          <span class="mono dim" id="readerState"></span>
+        </div>
+        <ul class="players" id="playerList"><li class="note">Looking...</li></ul>
+        <p class="note" id="readerNote"></p>
+      </div>
+    </section>
+
+    <section class="settings" id="settings" aria-label="Widget settings">
+      <div class="group">
+        <label class="field"><span class="mono dim">Widget name</span><input id="name" maxlength="40"></label>
+        <div class="btn-row">
+          <button type="button" id="duplicate" class="btn">Duplicate</button>
+          <button type="button" id="delete" class="btn btn-danger">Delete</button>
+          <span class="mono dim saved" id="saved" aria-live="polite"></span>
+        </div>
+      </div>
+
+      <div class="group">
+        <h3 class="group-title">Style</h3>
+        <div class="skins" id="skins" role="radiogroup" aria-label="Style"></div>
+      </div>
+
+      <div class="group">
+        <h3 class="group-title">Look</h3>
+        <span class="mono dim lbl">Background</span>
+        <div class="seg" data-key="theme"><button data-v="dark">Dark</button><button data-v="light">Light</button><button data-v="clear">None</button></div>
+        <span class="mono dim lbl">Font</span>
+        <div class="seg two" data-key="font"><button data-v="barlow-condensed" class="f-bc">Barlow Condensed</button><button data-v="barlow" class="f-b">Barlow</button><button data-v="dm-sans" class="f-dm">DM Sans</button><button data-v="jetbrains-mono" class="f-mono">Mono</button></div>
+        <div class="range-row"><span class="mono dim lbl">Size</span><output class="mono" id="scaleOut"></output></div>
+        <input type="range" min="50" max="250" step="5" data-key="scale" data-num aria-label="Size">
+        <span class="mono dim lbl">Sits on the</span>
+        <div class="seg" data-key="align"><button data-v="left">Left</button><button data-v="right">Right</button></div>
+      </div>
+
+      <div class="group">
+        <h3 class="group-title">Cover</h3>
+        <div class="seg two" data-key="cover"><button data-v="square">Square</button><button data-v="round">Round</button><button data-v="spin">Spinning record</button><button data-v="none">No cover</button></div>
+        <label class="setting"><span>Glow around the cover</span><input type="checkbox" class="sw" data-key="coverGlow"></label>
+        <label class="setting"><span>Blurred cover behind the widget</span><input type="checkbox" class="sw" data-key="coverBlur"></label>
+      </div>
+
+      <div class="group">
+        <h3 class="group-title">Colour</h3>
+        <div class="seg" data-key="accent"><button data-v="cover">From the cover</button><button data-v="iv">IV red</button><button data-v="custom">Pick one</button></div>
+        <label class="setting" id="tintRow"><span>Colour</span><input type="color" data-key="tint"></label>
+      </div>
+
+      <div class="group">
+        <h3 class="group-title">Show and hide</h3>
+        <div class="seg stack" data-key="visibility"><button data-v="always">Always on screen</button><button data-v="pause">Hide when paused</button><button data-v="change">Only when the song changes</button></div>
+        <label class="setting" id="delayRow"><span>Hide after (seconds paused)</span><input type="number" min="0" max="120" data-key="hideDelay" data-num></label>
+        <label class="setting" id="forRow"><span>Show for (seconds)</span><input type="number" min="2" max="120" data-key="visibleFor" data-num></label>
+        <label class="field"><span class="mono dim">Comes in</span><select data-key="showIn" class="anim"></select></label>
+        <label class="field"><span class="mono dim">Goes out</span><select data-key="showOut" class="anim"></select></label>
+      </div>
+
+      <div class="group">
+        <h3 class="group-title">Details</h3>
+        <label class="setting"><span>Progress bar</span><input type="checkbox" class="sw" data-key="showProgress"></label>
+        <label class="setting"><span>Time played and length</span><input type="checkbox" class="sw" data-key="showTimes"></label>
+        <label class="setting"><span>Album name</span><input type="checkbox" class="sw" data-key="showAlbum"></label>
+        <label class="setting"><span>Player name</span><input type="checkbox" class="sw" data-key="showApp"></label>
+        <label class="setting"><span>Playing bars <small class="dim">(an animation, not the real sound)</small></span><input type="checkbox" class="sw" data-key="bars"></label>
+      </div>
+
+      <div class="group">
+        <h3 class="group-title">Nothing playing</h3>
+        <div class="seg" data-key="nothingPlaying"><button data-v="hide">Hide the widget</button><button data-v="show">Show a message</button></div>
+        <div id="npFields" class="sub">
+          <label class="field"><span class="mono dim">Title</span><input data-key="npTitle" maxlength="80"></label>
+          <label class="field"><span class="mono dim">Second line</span><input data-key="npArtist" maxlength="80"></label>
+          <div class="btn-row">
+            <button type="button" id="pickCover" class="btn">Choose picture</button>
+            <button type="button" id="clearCover" class="btn">Use the IV picture</button>
+          </div>
+          <p class="note bad" id="coverError" hidden></p>
+        </div>
+      </div>
+
+      <div class="group">
+        <h3 class="group-title">Which players</h3>
+        <div class="seg" data-key="sources"><button data-v="music">Music players</button><button data-v="any">Anything that plays</button></div>
+        <p class="note">Music players means Spotify, Apple Music, TIDAL, YouTube Music, Deezer and the like, plus browser tabs that name an artist and an album (YouTube Music does; a YouTube video doesn't). Anything that plays adds videos too. Switch single players off under Players on this PC.</p>
+      </div>
+    </section>
+  </main>
+</div>
+<script type="module" src="/static/editor.js"></script>
+</body>
+</html>

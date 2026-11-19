@@ -1,0 +1,51 @@
+{
+  "name": "iv-now-playing",
+  "productName": "IV Now Playing",
+  "version": "0.1.0",
+  "description": "Infinite Variance now-playing widget for OBS: shows the song playing on your PC, from any player, with no logins.",
+  "author": "Infinite Variance",
+  "license": "MIT",
+  "private": true,
+  "type": "module",
+  "main": "./src/main/index.js",
+  "homepage": "https://infinitevariance.ai",
+  "scripts": {
+    "start": "electron .",
+    "test": "node --test --test-concurrency=1 \"test/*.test.mjs\"",
+    "dist": "electron-builder --win --x64 --publish never",
+    "dist:dir": "electron-builder --win --x64 --dir --publish never"
+  },
+  "devDependencies": {
+    "electron": "44.9.0",
+    "electron-builder": "26.15.3",
+    "playwright": "^1.65.0"
+  },
+  "build": {
+    "appId": "ai.infinitevariance.nowplaying",
+    "productName": "IV Now Playing",
+    "copyright": "© 2026 Infinite Variance",
+    "directories": { "output": "dist", "buildResources": "build" },
+    "files": ["src/**/*", "web/**/*", "build/icon.png", "build/tray.png", "package.json"],
+    "asar": true,
+    "win": {
+      "target": [{ "target": "nsis", "arch": ["x64"] }],
+      "icon": "build/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": false,
+      "createStartMenuShortcut": true,
+      "shortcutName": "IV Now Playing",
+      "uninstallDisplayName": "IV Now Playing",
+      "artifactName": "IV-Now-Playing-Setup.exe",
+      "deleteAppDataOnUninstall": false
+    },
+    "extraResources": [
+      { "from": "resources/media-reader.ps1", "to": "media-reader.ps1" },
+      { "from": "THIRD_PARTY_NOTICES.txt", "to": "THIRD_PARTY_NOTICES.txt" },
+      { "from": "build/licenses", "to": "licenses" }
+    ]
+  }
+}
