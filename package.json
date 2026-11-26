@@ -17,6 +17,8 @@
     "start": "electron .",
     "test": "node --test --test-concurrency=1 \"test/*.test.mjs\"",
     "dist": "electron-builder --win --x64 --publish never",
+    "dist:win-release": "node scripts/windows-release.cjs",
+    "release": "npm run dist:win-release",
     "dist:dir": "electron-builder --win --x64 --dir --publish never"
   },
   "devDependencies": {
